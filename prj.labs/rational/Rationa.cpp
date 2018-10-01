@@ -95,11 +95,4 @@ std::istream& Rational::readFrom(std::istream& istrm)
 
 	return istrm;
 }
-inline std::ostream& operator<<(std::ostream& ostrm, const Rational& r)
-{
-	return r.writeTo(ostrm);
-}
-inline std::istream& operator>>(std::istream& istrm, Rational& r)
-{
-	return r.readFrom(istrm);
-}
+

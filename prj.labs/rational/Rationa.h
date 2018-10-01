@@ -34,7 +34,13 @@ private:
 
 
 using namespace std;
-inline std::ostream& operator<<(std::ostream&, const Rational&);
-inline std::istream& operator>>(std::istream&, Rational&);
+inline std::ostream& operator<<(std::ostream& ostrm, const Rational& r)
+{
+	return r.writeTo(ostrm);
+}
+inline std::istream& operator>>(std::istream& istrm, Rational& r)
+{
+	return r.readFrom(istrm);
+}
 
 #endif // __RATIONA_H__
