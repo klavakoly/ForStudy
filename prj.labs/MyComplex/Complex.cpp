@@ -35,49 +35,33 @@ Complex& Complex::operator/=(Complex& a)
 	im = (a.re *im - re * a.im) / (a.re*a.re + a.im*a.im);
 	return *this;
 }
-double& Complex::get_Re()
-{
-	return re;
-}
-void Complex::put_Re(double value)
-{
-	re = value;
-}
-double& Complex::get_Im()
-{
-	return im;
-}
-void Complex::put_Im(double value)
-{
-	im = value;
-}
 
-Complex operator+(Complex& a, Complex& b)
+
+Complex operator+(Complex a, Complex b)
 {
 	Complex c;
 	c += a;
 	c += b;
 	return c;
 }
-Complex operator-(Complex& a, Complex& b)
+Complex operator-(Complex a, Complex b)
 {
 	Complex c;
 	c += a;
 	c -= b;
 	return c;
 }
-Complex operator*(Complex& a, Complex& b)
+Complex operator*(Complex a, Complex b)
 {
-	Complex c;
-	c.get_Re= a.get_Re * b.get_Re - a.get_Im * b.get_Im;
-	c.get_Im= a.get_Re * b.get_Im + a.get_Im * b.get_Re;
+	Complex c(a);
+	c *= b;
 	return c;
+
 }
-Complex operator/(Complex& a, Complex& b)
+Complex operator/(Complex a, Complex b)
 {
-	Complex c;
-	c.get_Re= (a.get_Re * b.get_Re + a.get_Im * b.get_Im) / (b.get_Re*b.get_Re + b.get_Im*b.get_Im);
-	c.get_Im= (b.get_Re * a.get_Im - a.get_Re * b.get_Im) / (b.get_Re*b.get_Re + b.get_Im*b.get_Im);
+	Complex c(a);
+	c /= b;
 	return c;
 }
 
@@ -106,12 +90,4 @@ std::iostream& Complex::ReadTo(std::iostream& istrm)
 	return istrm;
 }
 
-inline std::ostream& operator<<(std::ostream& ostrm, Complex& r)
-{
-	return r.WriteTo(ostrm);
-}
-inline std::iostream& operator>>(std::iostream& istrm, Complex& r)
-{
-	return r.ReadTo(istrm);
-}
 

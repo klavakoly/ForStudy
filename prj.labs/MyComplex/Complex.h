@@ -18,11 +18,6 @@ public:
 	Complex& operator/=(Complex& a);
 	std::ostream& WriteTo(std::ostream& ostrm);
 	std::iostream& ReadTo(std::iostream& istrm);
-	double& get_Re();
-	void put_Re(double value);
-	double& get_Im();
-	void put_Im(double value);
-	
 
 private:
 	double re{0.0};
@@ -33,10 +28,10 @@ private:
 
 };
 
-Complex operator+(Complex& a, Complex& b);
-Complex operator-(Complex& a, Complex& b);
-Complex operator*(Complex& a, Complex& b);
-Complex operator/(Complex& a, Complex& b);
+Complex operator+(Complex a, Complex b);
+Complex operator-(Complex a, Complex b);
+Complex operator*(Complex a, Complex b);
+Complex operator/(Complex a, Complex b);
 inline std::ostream& operator<<(std::ostream& ostrm, Complex& r)
 {
 	return r.WriteTo(ostrm);
