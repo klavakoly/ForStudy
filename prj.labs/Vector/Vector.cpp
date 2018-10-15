@@ -24,7 +24,7 @@
 
 	int& Vector::operator[](const int index)
 	{
-		if ((index < 0) || (index > size_)) throw "error";
+		if ((index < 0) || (index >= size_)) throw "error";
 		return data_[index];
 	};
 	int Vector::GetSize()const
