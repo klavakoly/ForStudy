@@ -1,3 +1,3 @@
-add_subdirectory(complex)
-add_subdirectory(rational)
+add_subdirectory(Rational)
 add_subdirectory(MyComplex)
+add_subdirectory(Vector)
