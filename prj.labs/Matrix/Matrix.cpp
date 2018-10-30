@@ -1,4 +1,4 @@
-#include "Matrix.h"
+#include "matrix.h"
 
 Matrix::Matrix(int sizeRows, int sizeColums)
 	:matrix_(new int*[sizeRows])

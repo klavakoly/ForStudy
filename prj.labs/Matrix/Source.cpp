@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "Matrix.h"
+#include "matrix.h"
 
 void CoutMatrix(Matrix& matr) 
 {

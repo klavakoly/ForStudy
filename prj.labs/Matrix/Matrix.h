@@ -1,4 +1,5 @@
-
+#ifndef matrix_
+#define matrix_
 class Matrix
 {
 public:
@@ -14,3 +15,4 @@ private:
 	int sizeRows_{ 0 };
 	int sizeColums_{ 0 };
 };
+#endif //matrix_

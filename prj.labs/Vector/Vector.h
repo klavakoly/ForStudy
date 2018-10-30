@@ -1,3 +1,5 @@
+#ifndef vector_
+#define vector_
 #pragma once
 
 class Vector
@@ -15,3 +17,4 @@ private:
 	int* data_{ nullptr };
 	int size_{ 0 };
 };
+#endif //vector_

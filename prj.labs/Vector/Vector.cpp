@@ -1,4 +1,4 @@
-#include "Vector.h" 
+#include "vector.h" 
 
 	Vector::Vector(const int s)
 		:size_(s)
