@@ -1,4 +1,4 @@
-#include "Rationa.h"
+#include "rationa.h"
 #include <stdexcept>
 #include <math.h>
 

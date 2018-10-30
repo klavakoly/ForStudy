@@ -1,3 +1,3 @@
-add_executable(Rational Source.cpp Rationa.cpp Rationa.h Rational_Tests.h Rational_Tests.cpp NOD.h NOD.cpp DelHas.h DelHas.cpp)
+add_executable(Rational source.cpp rationa.cpp rationa.h )
 
 set_property(TARGET Rational PROPERTY CXX_STANDARD 14)

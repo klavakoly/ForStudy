@@ -4,7 +4,7 @@
 #include <sstream>
 #include <iostream>
 #include <ostream>
-#include "Rationa.h"
+#include "rationa.h"
 
 using namespace std;
 

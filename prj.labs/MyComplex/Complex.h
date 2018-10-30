@@ -1,3 +1,5 @@
+#ifndef complex_
+#define complex_
 #pragma once
 #include <sstream>
 #include <ostream>
@@ -40,3 +42,4 @@ inline std::iostream& operator>>(std::iostream& istrm, Complex& r)
 {
 	return r.ReadTo(istrm);
 }
+#endif // complex_
