@@ -4,8 +4,8 @@
 #include <ostream>
 #include <iostream>
 #include <sstream>
-#include "DelHas.h"
-#include "NOD.h"
+
+
 
 
 class Rational
@@ -14,6 +14,7 @@ public:
 	Rational();
 	Rational(int num, int den);
 	explicit Rational(int den);
+	
 	bool operator==(Rational& a) const;
 	bool operator!=(Rational& a) const;
 	Rational& operator*=(Rational& a);
@@ -42,5 +43,8 @@ inline std::istream& operator>>(std::istream& istrm, Rational& r)
 {
 	return r.readFrom(istrm);
 }
+
+int NOD(int, int);
+void delHas(int& a, int& b);
 
 #endif // __RATIONA_H__

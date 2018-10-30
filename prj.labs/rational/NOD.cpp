@@ -1,14 +1,15 @@
 #include "NOD.h"
+#include <math.h>
 int NOD(int a, int b)
 {
-	while (b != 0)
+	while (b != 0)//пока b не 0
 	{
-		if (a > b)
+		if (abs(a) > abs(b))
 		{
 			a %= b;
 			if (!a)
 			{
-				return (b>0) ? b : (-b);
+				return b;
 			}
 		}
 		else

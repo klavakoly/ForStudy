@@ -1,16 +1,22 @@
 #include "Rationa.h"
+#include <stdexcept>
+#include <math.h>
+
 
 Rational::Rational() = default;
 Rational::Rational(int num, int den)
 	:numerator(num)
 	, denominator(den)
 {
+	if (denominator == 0) throw std::invalid_argument("denuminator can't be 0!");
 	delHas(numerator, denominator);
 }
 Rational::Rational(int den)
 	: Rational(1, den)
 {
 }
+
+
 bool Rational::operator==(Rational& a) const
 {
 	return (numerator == a.numerator) && (denominator == a.denominator);
@@ -95,4 +101,36 @@ std::istream& Rational::readFrom(std::istream& istrm)
 
 	return istrm;
 }
+int NOD(int a, int b)
+{
+	while (b != 0)//пока b не 0
+	{
+		if (abs(a) > abs(b))
+		{
+			a %= b;
+			if (!a)
+			{
+				return b;
+			}
+		}
+		else
+		{
+			b %= a;
+			if (!b)
+			{
+				return (a>0) ? a : (-a);
+			}
+		}
+	}
+};
+void delHas(int& a, int& b)
+{
+	int nod = NOD(a, b);
+	if (nod)
+	{
+		a /= nod;
+		b /= nod;
+	}
+};
+
 

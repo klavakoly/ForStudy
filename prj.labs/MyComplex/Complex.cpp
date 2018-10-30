@@ -9,7 +9,7 @@ Complex::Complex(double real, double imaginary)
 	re=real;
 	im=imaginary;
 };
-bool Complex::operator==(Complex& a) { return((re == a.re) && (im == a.im)); }
+bool Complex::operator==(Complex& a) { return(((re - a.re) < 0.00001) && ((im - a.im) < 0.00001)); }
 bool Complex::operator!=(Complex& a) { return(!operator==(a)); }
 Complex& Complex::operator+=(Complex& a)
 {
@@ -25,8 +25,9 @@ Complex& Complex::operator-=(Complex& a)
 }
 Complex& Complex::operator*=(Complex& a)
 {
+	Complex reThis = Complex(re);
 	re = re * a.re - im * a.im;
-	im = re * a.im + im * a.re;
+	im =  reThis.re * a.im + im * a.re;
 	return *this;
 }
 Complex& Complex::operator/=(Complex& a)
@@ -67,7 +68,7 @@ Complex operator/(Complex a, Complex b)
 
 std::ostream& Complex::WriteTo(std::ostream& ostrm)
 {
-	ostrm << left << re << comma << right;
+	ostrm << left << re << comma << im << right;
 	return ostrm;
 }
 std::iostream& Complex::ReadTo(std::iostream& istrm)
