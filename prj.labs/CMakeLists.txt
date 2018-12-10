@@ -1,4 +1,4 @@
-add_subdirectory(Rational)
-add_subdirectory(MyComplex)
-add_subdirectory(Vector)
-add_subdirectory(Matrix)
+add_subdirectory(rational)
+add_subdirectory(complex)
+add_subdirectory(matrix)
+add_subdirectory(dynamic_array)
