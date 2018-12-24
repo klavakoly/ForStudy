@@ -4,103 +4,11 @@
 using namespace cv;
 using namespace std;
 
-void binar(Mat image)
-{
-  for (int i = 0; i < image.rows; i++)
-  {
-    for (int j = 0; j < image.cols; j++)
-    {
-      if (image.at<uchar>(i, j) < 50)
-        image.at<uchar>(i, j) = 0;
-      else
-        image.at<uchar>(i, j) = 255;
-    }
-  }
-}
+void binar(Mat image);
+Mat poleWithPlaceForCount(Mat& image2);
+void drewPoleLines(Mat& last, Mat& imagePicture, int masshtab, int lineBright, int darkLineBright);
+void Reducing(Mat& image);
 
-void drewPoleLines(Mat& last, Mat& imagePicture, int masshtab, int lineBright, int darkLineBright)
-{
-  int hight_ = last.rows;
-  int weight_ = last.cols;
-  for (int y = 0; y < hight_; y = y + masshtab)
-  {
-    line(last, Point(0, y), Point(weight_, y), cv::Scalar(lineBright));
-    line(last, Point(0, y + masshtab - 1), Point(weight_, y + masshtab - 1), cv::Scalar(lineBright));
-  }
-
-  for (int x = 0; x < weight_; x = x + masshtab)
-  {
-    line(last, Point(x, 0), Point(x, hight_), cv::Scalar(lineBright));
-    line(last, Point(x + masshtab - 1, 0), Point(x + masshtab - 1, hight_), cv::Scalar(lineBright));
-  }
-
-  for (int y = last.rows - imagePicture.rows; y < hight_; y = y + masshtab * 5)
-  {
-    line(last, Point(0, y), Point(weight_, y), cv::Scalar(darkLineBright));
-    line(last, Point(0, y + masshtab * 5 - 1), Point(weight_, y + masshtab * 5 - 1), cv::Scalar(darkLineBright));
-  }
-
-  for (int x = last.cols - imagePicture.cols; x < weight_; x = x + masshtab * 5)
-  {
-    line(last, Point(x, 0), Point(x, hight_), cv::Scalar(darkLineBright));
-    line(last, Point(x + masshtab * 5 - 1, 0), Point(x + masshtab * 5 - 1, hight_), cv::Scalar(darkLineBright));
-  }
-
-  for (int y = 0; y < hight_ - imagePicture.rows - 1; y++)
-  {
-    line(last, Point(0, y), Point(weight_ - imagePicture.cols - 1, y), cv::Scalar(lineBright));
-  }
-
-  for (int x = 0; x < weight_ - imagePicture.cols - 1; x++)
-  {
-    line(last, Point(x, 0), Point(x, hight_ - imagePicture.rows - 1), cv::Scalar(lineBright));
-  }
-
-  line(last, Point(0, hight_ - imagePicture.rows - 1), Point(weight_, hight_ - imagePicture.rows - 1), cv::Scalar(0));
-  line(last, Point(weight_ - imagePicture.cols - 1, 0), Point(weight_ - imagePicture.cols - 1, hight_), cv::Scalar(0));
-}
-
-void Reducing(Mat& image)
-{
-  int weight_ = image.size[1];
-  int hight_ = image.size[0];
-
-  int * reduce = new int[4]; //l_x r_x top_y bot_y
-  bool * check = new bool[4];
-  for (int i = 0; i < 4; i++) { check[i] = true; reduce[i] = 0; }
-  reduce[0] = weight_;
-
-  for (int i = 0; i < image.rows; i++)
-  {
-
-    for (int j = 0; j < image.cols; j++)
-    {
-      if (image.at<uchar>(i, j) != 255)
-      {
-        check[2] = false;
-        check[3] = false;
-        if (reduce[0] > j) reduce[0] = j;
-        if (reduce[1] < j)reduce[1] = j;
-      }
-    }
-    if (check[2]) reduce[2]++;
-    if (check[3])
-    {
-      reduce[3]++;
-    }
-    else
-    {
-      reduce[3] = 0;
-      check[3] = true;
-    }
-  }
-  reduce[1] = weight_ - reduce[1] - 1;
-  reduce[0] += 1;
-  if (reduce[0] == weight_ + 1) reduce[0] = 0;
-
-  Rect r(reduce[0], reduce[2], weight_ - reduce[0] - reduce[1], hight_ - reduce[2] - reduce[3]);
-  image = Mat(image, r).clone();
-}
 
 int main(int argc, char* argv[])
 {
@@ -143,9 +51,11 @@ int main(int argc, char* argv[])
 
   weight_ = image.size[1];
   hight_ = image.size[0];
-
-  std::cout << "Number of lines: " << weight_ << endl;
-  std::cout << "Number of columns: " << hight_ << endl;
+  if (argc < 2)
+  {
+    std::cout << "Number of lines: " << weight_ << endl;
+    std::cout << "Number of columns: " << hight_ << endl;
+  }
 
   if (argc > 2)
   {
@@ -184,39 +94,18 @@ int main(int argc, char* argv[])
   String windowName4 = "last";
   String windowName5 = "Pole";
 
+  cv::resize(image, image, { weight , hight });//масштабирование картинки к размерам weight*hight
 
-  //cv::namedWindow(windowName3, WINDOW_AUTOSIZE);
-  //cv::imshow(windowName3, image);////!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-  cv::resize(image, image, { weight , hight });
-
-  binar(image);
+  binar(image);//бинаризация картинки(приведение пикселей либо к черному цвету либо к белому, без интенсивности)
 
   Mat image2;
-  cv::resize(image, image2, { weight * masshtab, hight * masshtab }, 0.0, 0.0, INTER_NEAREST);
+  cv::resize(image, image2, { weight * masshtab, hight * masshtab }, 0.0, 0.0, INTER_NEAREST);//масштабирование картинки в более читаемые размеры
 
   binar(image2);
 
-  if (weight % 2 == 0)
-  {
-    weight_ = weight * 1.5*masshtab;
-  }
-  else
-  {
-    weight_ = (weight - 1) * 1.5*masshtab + masshtab;
-  }
-  if (hight % 2 == 0)
-  {
-    hight_ = hight * 1.5*masshtab;
-  }
-  else
-  {
-    hight_ = (hight - 1) * 1.5*masshtab + masshtab;
-  }
+  Mat last = poleWithPlaceForCount(image2);//добавление к изображению слева и сверху поля для чисел
 
-  cv::Mat last = cv::Mat(hight_, weight_, IMREAD_GRAYSCALE, cv::Scalar(255));
-
-  drewPoleLines(last, image2, masshtab, lineBright, darkLineBright);
+  drewPoleLines(last, image2, masshtab, lineBright, darkLineBright);//вырисовование линий для кроссворда
 
   int maxPointRows{ 0 };
   int maxPointCols{ 0 };
@@ -409,4 +298,136 @@ int main(int argc, char* argv[])
   return 0;
 }
 
+
+
+void binar(Mat image)
+{
+  for (int i = 0; i < image.rows; i++)
+  {
+    for (int j = 0; j < image.cols; j++)
+    {
+      if (image.at<uchar>(i, j) < 60)
+        image.at<uchar>(i, j) = 0;
+      else
+        image.at<uchar>(i, j) = 255;
+    }
+  }
+}
+
+
+
+Mat poleWithPlaceForCount(Mat& image2)
+{
+  int weight = image2.cols;
+  int hight = image2.rows;
+  int weight_{ 0 };
+  int hight_{ 0 };
+  if (weight % 2 == 0)
+  {
+    weight_ = weight * 1.5;
+  }
+  else
+  {
+    weight_ = (weight - 1) * 1.5 + 1;
+  }
+  if (hight % 2 == 0)
+  {
+    hight_ = hight * 1.5;
+  }
+  else
+  {
+    hight_ = (hight - 1) * 1.5 + 1;
+  }
+
+  cv::Mat last = cv::Mat(hight_, weight_, IMREAD_GRAYSCALE, cv::Scalar(255));
+  return last;
+}
+
+
+
+void drewPoleLines(Mat& last, Mat& imagePicture, int masshtab, int lineBright, int darkLineBright)
+{
+  int hight_ = last.rows;
+  int weight_ = last.cols;
+  for (int y = 0; y < hight_; y = y + masshtab)
+  {
+    line(last, Point(0, y), Point(weight_, y), cv::Scalar(lineBright));
+    line(last, Point(0, y + masshtab - 1), Point(weight_, y + masshtab - 1), cv::Scalar(lineBright));
+  }
+
+  for (int x = 0; x < weight_; x = x + masshtab)
+  {
+    line(last, Point(x, 0), Point(x, hight_), cv::Scalar(lineBright));
+    line(last, Point(x + masshtab - 1, 0), Point(x + masshtab - 1, hight_), cv::Scalar(lineBright));
+  }
+
+  for (int y = last.rows - imagePicture.rows; y < hight_; y = y + masshtab * 5)
+  {
+    line(last, Point(0, y), Point(weight_, y), cv::Scalar(darkLineBright));
+    line(last, Point(0, y + masshtab * 5 - 1), Point(weight_, y + masshtab * 5 - 1), cv::Scalar(darkLineBright));
+  }
+
+  for (int x = last.cols - imagePicture.cols; x < weight_; x = x + masshtab * 5)
+  {
+    line(last, Point(x, 0), Point(x, hight_), cv::Scalar(darkLineBright));
+    line(last, Point(x + masshtab * 5 - 1, 0), Point(x + masshtab * 5 - 1, hight_), cv::Scalar(darkLineBright));
+  }
+
+  for (int y = 0; y < hight_ - imagePicture.rows - 1; y++)
+  {
+    line(last, Point(0, y), Point(weight_ - imagePicture.cols - 1, y), cv::Scalar(lineBright));
+  }
+
+  for (int x = 0; x < weight_ - imagePicture.cols - 1; x++)
+  {
+    line(last, Point(x, 0), Point(x, hight_ - imagePicture.rows - 1), cv::Scalar(lineBright));
+  }
+
+  line(last, Point(0, hight_ - imagePicture.rows - 1), Point(weight_, hight_ - imagePicture.rows - 1), cv::Scalar(0));
+  line(last, Point(weight_ - imagePicture.cols - 1, 0), Point(weight_ - imagePicture.cols - 1, hight_), cv::Scalar(0));
+}
+
+
+
+void Reducing(Mat& image)
+{
+  int weight_ = image.size[1];
+  int hight_ = image.size[0];
+
+  int * reduce = new int[4]; //l_x r_x top_y bot_y
+  bool * check = new bool[4];
+  for (int i = 0; i < 4; i++) { check[i] = true; reduce[i] = 0; }
+  reduce[0] = weight_;
+
+  for (int i = 0; i < image.rows; i++)
+  {
+
+    for (int j = 0; j < image.cols; j++)
+    {
+      if (image.at<uchar>(i, j) != 255)
+      {
+        check[2] = false;
+        check[3] = false;
+        if (reduce[0] > j) reduce[0] = j;
+        if (reduce[1] < j)reduce[1] = j;
+      }
+    }
+    if (check[2]) reduce[2]++;
+    if (check[3])
+    {
+      reduce[3]++;
+    }
+    else
+    {
+      reduce[3] = 0;
+      check[3] = true;
+    }
+  }
+  reduce[1] = weight_ - reduce[1] - 1;
+  reduce[0] += 1;
+  if (reduce[0] == weight_ + 1) reduce[0] = 0;
+
+  Rect r(reduce[0], reduce[2], weight_ - reduce[0] - reduce[1], hight_ - reduce[2] - reduce[3]);
+  image = Mat(image, r).clone();
+}
 
