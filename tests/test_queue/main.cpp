@@ -1,6 +1,6 @@
 #include <iostream>
 #include<ostream>
-#include "queue.h"
+#include "../../prj.labs/queue//queue.h"
 
 int main()
 {

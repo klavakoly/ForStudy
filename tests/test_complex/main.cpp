@@ -1,6 +1,6 @@
 #include <iostream>
 #include <ostream>
-#include "complex.h"
+#include "../../prj.labs/complex/complex.h"
 
 using namespace std;
 int main()

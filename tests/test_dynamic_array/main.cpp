@@ -1,5 +1,5 @@
 #include <iostream>
-#include "dynamic_array.h"
+#include "../../prj.labs/dynamic_array/dynamic_array.h"
 
 using namespace std;
 

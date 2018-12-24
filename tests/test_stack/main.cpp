@@ -1,6 +1,6 @@
 #include <ostream>
 #include <iostream>
-#include "stack.h"
+#include "../../prj.labs/stack/stack.h"
 int main()
 {
   using namespace std;

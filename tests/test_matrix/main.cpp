@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "matrix.h"
+#include "../../prj.labs/matrix/matrix.h"
 
 void CoutMatrix(Matrix& matr)
 {
