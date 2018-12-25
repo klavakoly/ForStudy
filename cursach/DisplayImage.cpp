@@ -105,8 +105,6 @@ int main(int argc, char* argv[])
 
   Mat last = poleWithPlaceForCount(image2);//добавление к изображению слева и сверху поля для чисел
 
-  drewPoleLines(last, image2, masshtab, lineBright, darkLineBright);//вырисовование линий для кроссворда
-
   int maxPointRows{ 0 };
   int maxPointCols{ 0 };
   for (int i = 0; i < image.rows; i++)
@@ -115,7 +113,7 @@ int main(int argc, char* argv[])
 
     int count{ 0 };
     int point{ 0 };
-    for (int j = image.cols - 1; j >= 0; j--)
+    for (int j = image.cols - 1; j >= 0; j--) // запись чисел строк
     {
 
       if (image.at<uchar>(i, j) == 0)
@@ -189,7 +187,7 @@ int main(int argc, char* argv[])
     std::cout << endl;
   }
 
-  for (int i = 0; i < image.cols; i++)
+  for (int i = 0; i < image.cols; i++) //запись чисел столбцов
   {
     string countString{ "" };
 
@@ -273,7 +271,10 @@ int main(int argc, char* argv[])
     last.rows - image2.rows - maxPointRows * masshtab,
     last.cols - (last.cols - image2.cols - maxPointCols * masshtab),
     last.rows - (last.rows - image2.rows - maxPointRows * masshtab));
-  last = Mat(last, r).clone();
+  last = Mat(last, r).clone();//удаление ненужных полей 
+
+  drewPoleLines(last, image2, masshtab, lineBright, darkLineBright);//вырисовование линий для кроссворда
+
   if (argc < 2)
   {
     cv::namedWindow(windowName4, WINDOW_AUTOSIZE);
