@@ -15,15 +15,23 @@ int main(int argc, char* argv[])
   const int darkLineBright{ 150 };
   const int lineBright{ 200 };
   const int masshtab{ 25 };
-  int weight{ 0 };
-  int hight{ 0 };
-  int weight_{ 0 };
-  int hight_{ 0 };
+  int width{ 0 };
+  int height{ 0 };
+  int width_{ 0 };
+  int height_{ 0 };
   string path{ "" };
   const int maxValue{ 80 };
   const int minValue{ 10 };
   string name_{ "" };
   Mat image;
+
+  if ((argc > 1) && (argc < 4))
+  {
+    cout << "Not enough arguments!" << endl;
+
+    cout << "Usege" << endl << "Crossvord [adress picture] [width] [hight]";
+    return -1;
+  }
 
   if (argc > 1)
   {
@@ -36,57 +44,67 @@ int main(int argc, char* argv[])
     std::cin >> name_;
     image = imread(name_, IMREAD_GRAYSCALE);
 
-    while (image.empty())
-    {
-      std::cout << "Could not open or find the image" << endl;
-      std::cout << "Try again. Get name of picture" << endl;
-      std::cin >> name_;
-      image = imread(name_, IMREAD_GRAYSCALE);
-    }
   }
-
-  binar(image);
+  while (image.empty())
+  {
+    std::cout << "Could not open or find the image" << endl;
+    if (argc > 1)
+    {
+      return -1;
+    }
+    std::cout << "Try again. Get name of picture" << endl;
+    std::cin >> name_;
+    image = imread(name_, IMREAD_GRAYSCALE);
+  }
 
   Reducing(image);
 
-  weight_ = image.size[1];
-  hight_ = image.size[0];
+  width_ = image.size[1];
+  height_ = image.size[0];
   if (argc < 2)
   {
-    std::cout << "Number of lines: " << weight_ << endl;
-    std::cout << "Number of columns: " << hight_ << endl;
+    std::cout << "Number of lines: " << width_ << endl;
+    std::cout << "Number of columns: " << height_ << endl;
   }
 
   if (argc > 2)
   {
-    weight = atoi(argv[2]);
+    width = atoi(argv[2]);
   }
   else
   {
     std::cout << "Get weight" << endl;
-    std::cin >> weight;
+    std::cin >> width;
   }
 
-  while ((weight > maxValue) || (weight < minValue))
+  while ((width > maxValue) || (width < minValue))
   {
-
-    std::cout << "Uncorrect value. Try again." << endl;//not number: check
-    std::cin >> weight;
+    std::cout << "Uncorrect value. Try again." << endl;
+    if (argc > 1)
+    {
+      return -1;
+    }
+    std::cin >> width;
   }
 
   if (argc > 3)
   {
-    hight = atoi(argv[3]);
+    height = atoi(argv[3]);
   }
   else
   {
     std::cout << "Get hight" << endl;
-    std::cin >> hight;
+    std::cin >> height;
   }
-  while ((hight > maxValue) || (hight < minValue))
+
+  while ((height > maxValue) || (height < minValue))
   {
     std::cout << "Uncorrect value. Try again." << endl;
-    std::cin >> hight;
+    if (argc > 1)
+    {
+      return -1;
+    }
+    std::cin >> height;
   }
 
   String windowName2 = "resize";
@@ -94,12 +112,13 @@ int main(int argc, char* argv[])
   String windowName4 = "last";
   String windowName5 = "Pole";
 
-  cv::resize(image, image, { weight , hight });//масштабирование картинки к размерам weight*hight
+  binar(image);
+  cv::resize(image, image, { width , height });//масштабирование картинки к размерам weight*hight
 
   binar(image);//бинаризация картинки(приведение пикселей либо к черному цвету либо к белому, без интенсивности)
 
   Mat image2;
-  cv::resize(image, image2, { weight * masshtab, hight * masshtab }, 0.0, 0.0, INTER_NEAREST);//масштабирование картинки в более читаемые размеры
+  cv::resize(image, image2, { width * masshtab, height * masshtab }, 0.0, 0.0, INTER_NEAREST);//масштабирование картинки в более читаемые размеры
 
   binar(image2);
 
@@ -184,7 +203,7 @@ int main(int argc, char* argv[])
     if (point > maxPointCols)
       maxPointCols = point;
     point = 0;
-    std::cout << endl;
+    //std::cout << endl;
   }
 
   for (int i = 0; i < image.cols; i++) //запись чисел столбцов
@@ -263,7 +282,7 @@ int main(int argc, char* argv[])
     if (point > maxPointRows)
       maxPointRows = point;
     point = 0;
-    std::cout << endl;
+    //std::cout << endl;
   }
 
   Rect r(
@@ -292,10 +311,11 @@ int main(int argc, char* argv[])
     cv::namedWindow(windowName5, WINDOW_AUTOSIZE);
     cv::imshow(windowName5, last);
   }
-  //cv::namedWindow(windowName2, WINDOW_AUTOSIZE);
-  //cv::imshow(windowName2, image2);
-
-  cv::waitKey(0);
+  cout << "done" << endl;
+  if (argc < 2)
+  {
+    waitKey(0);
+  }
   return 0;
 }
 
