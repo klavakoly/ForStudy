@@ -8,10 +8,14 @@ void binar(Mat image);
 Mat poleWithPlaceForCount(Mat& image2);
 void drewPoleLines(Mat& last, Mat& imagePicture, int masshtab, int lineBright, int darkLineBright);
 void Reducing(Mat& image);
+void CreatePoles(Mat& image_small, Mat& image_masshtab, Mat& image_with_poles, const int masshtab);
+bool ReadValues(Mat& image, int argc, bool& IsUtilita, string& name_, char* argv[], int& width, int& width_, int& height_, int& height, int maxValue, int minValue);
 
 
 int main(int argc, char* argv[])
 {
+  bool IsUtilita{ false };
+  bool check{ false };
   const int darkLineBright{ 150 };
   const int lineBright{ 200 };
   const int masshtab{ 25 };
@@ -25,276 +29,25 @@ int main(int argc, char* argv[])
   string name_{ "" };
   Mat image;
 
-  if ((argc > 1) && (argc < 4))
+  check = ReadValues(image, argc, IsUtilita, name_, argv, width, width_, height_, height, maxValue, minValue);
+  if (check)
   {
-    cout << "Not enough arguments!" << endl;
-
-    cout << "Usege" << endl << "Crossvord [adress picture] [width] [hight]";
     return -1;
   }
-
-  if (argc > 1)
-  {
-    name_ = argv[1];
-    image = imread(name_, IMREAD_GRAYSCALE);
-  }
-  else
-  {
-    std::cout << "Get name of picture" << endl;
-    std::cin >> name_;
-    image = imread(name_, IMREAD_GRAYSCALE);
-
-  }
-  while (image.empty())
-  {
-    std::cout << "Could not open or find the image" << endl;
-    if (argc > 1)
-    {
-      return -1;
-    }
-    std::cout << "Try again. Get name of picture" << endl;
-    std::cin >> name_;
-    image = imread(name_, IMREAD_GRAYSCALE);
-  }
-
-  Reducing(image);
-
-  width_ = image.size[1];
-  height_ = image.size[0];
-  if (argc < 2)
-  {
-    std::cout << "Number of lines: " << width_ << endl;
-    std::cout << "Number of columns: " << height_ << endl;
-  }
-
-  if (argc > 2)
-  {
-    width = atoi(argv[2]);
-  }
-  else
-  {
-    std::cout << "Get weight" << endl;
-    std::cin >> width;
-  }
-
-  while ((width > maxValue) || (width < minValue))
-  {
-    std::cout << "Uncorrect value. Try again." << endl;
-    if (argc > 1)
-    {
-      return -1;
-    }
-    std::cin >> width;
-  }
-
-  if (argc > 3)
-  {
-    height = atoi(argv[3]);
-  }
-  else
-  {
-    std::cout << "Get hight" << endl;
-    std::cin >> height;
-  }
-
-  while ((height > maxValue) || (height < minValue))
-  {
-    std::cout << "Uncorrect value. Try again." << endl;
-    if (argc > 1)
-    {
-      return -1;
-    }
-    std::cin >> height;
-  }
-
   String windowName2 = "resize";
   String windowName3 = "first";
   String windowName4 = "last";
   String windowName5 = "Pole";
-
   binar(image);
   cv::resize(image, image, { width , height });//масштабирование картинки к размерам weight*hight
-
   binar(image);//бинаризация картинки(приведение пикселей либо к черному цвету либо к белому, без интенсивности)
-
   Mat image2;
   cv::resize(image, image2, { width * masshtab, height * masshtab }, 0.0, 0.0, INTER_NEAREST);//масштабирование картинки в более читаемые размеры
-
   binar(image2);
-
   Mat last = poleWithPlaceForCount(image2);//добавление к изображению слева и сверху поля для чисел
-
-  int maxPointRows{ 0 };
-  int maxPointCols{ 0 };
-  for (int i = 0; i < image.rows; i++)
-  {
-    string countString{ "" };
-
-    int count{ 0 };
-    int point{ 0 };
-    for (int j = image.cols - 1; j >= 0; j--) // запись чисел строк
-    {
-
-      if (image.at<uchar>(i, j) == 0)
-      {
-        count++;
-
-      }
-      else
-      {
-        if (count != 0)
-        {
-          point++;
-          countString = to_string(count);
-          if (count > 9)
-          {
-            putText(last,
-              countString,
-              Point(
-                last.cols - image2.cols - point * masshtab + 0.1*masshtab,
-                masshtab*0.7 + i * masshtab + (last.rows - image2.rows)),
-              masshtab*0.02,
-              masshtab*0.02,
-              Scalar(0));
-
-          }
-          else
-          {
-            putText(last,
-              countString,
-              Point(
-                last.cols - image2.cols - point * masshtab + masshtab * 0.3,
-                masshtab*0.7 + i * masshtab + (last.rows - image2.rows)),
-              masshtab*0.02,
-              masshtab*0.02,
-              Scalar(0));
-          }
-          count = 0;
-        }
-      }
-    }
-    if (count != 0)
-    {
-      point++;
-      countString = to_string(count);
-      if (count > 9)
-      {
-        putText(last,
-          countString,
-          Point(
-            last.cols - image2.cols - point * masshtab + 0.1*masshtab,
-            masshtab*0.7 + i * masshtab + (last.rows - image2.rows)),
-          masshtab*0.02,
-          masshtab*0.02,
-          Scalar(0));
-      }
-      else
-      {
-        putText(last,
-          countString,
-          Point(
-            last.cols - image2.cols - point * masshtab + masshtab * 0.3,
-            masshtab*0.7 + i * masshtab + (last.rows - image2.rows)),
-          masshtab*0.02,
-          masshtab*0.02,
-          Scalar(0));
-      }
-    }
-    if (point > maxPointCols)
-      maxPointCols = point;
-    point = 0;
-    //std::cout << endl;
-  }
-
-  for (int i = 0; i < image.cols; i++) //запись чисел столбцов
-  {
-    string countString{ "" };
-
-    int count{ 0 };
-    int point{ 0 };
-    for (int j = image.rows - 1; j >= 0; j--)
-    {
-
-      if (image.at<uchar>(j, i) == 0)
-      {
-        count++;
-      }
-      else
-      {
-        if (count != 0)
-        {
-          countString = to_string(count);
-          if (count > 9)
-          {
-            putText(last,
-              countString,
-              Point(
-                masshtab*0.1 + i * masshtab + (last.cols - image2.cols),
-                last.rows - image2.rows - point * masshtab - 0.25*masshtab),
-              masshtab*0.02,
-              masshtab*0.02,
-              Scalar(0));
-
-          }
-          else
-          {
-            putText(last,
-              countString,
-              Point(
-                masshtab*0.25 + i * masshtab + (last.cols - image2.cols),
-                last.rows - image2.rows - point * masshtab - 0.25*masshtab),
-              masshtab*0.02,
-              masshtab*0.02,
-              Scalar(0));
-          }
-          point++;
-          count = 0;
-        }
-      }
-    }
-    if (count != 0)
-    {
-      countString = to_string(count);
-      if (count > 9)
-      {
-        putText(last,
-          countString,
-          Point(
-            masshtab*0.1 + i * masshtab + (last.cols - image2.cols),
-            last.rows - image2.rows - point * masshtab - 0.25*masshtab),
-          masshtab*0.02,
-          masshtab*0.02,
-          Scalar(0));
-      }
-      else
-      {
-        putText(last,
-          countString,
-          Point(
-            masshtab*0.25 + i * masshtab + (last.cols - image2.cols),
-            last.rows - image2.rows - point * masshtab - 0.25*masshtab),
-          masshtab*0.02,
-          masshtab*0.02,
-          Scalar(0));
-      }
-      point++;
-    }
-    if (point > maxPointRows)
-      maxPointRows = point;
-    point = 0;
-    //std::cout << endl;
-  }
-
-  Rect r(
-    last.cols - image2.cols - maxPointCols * masshtab,
-    last.rows - image2.rows - maxPointRows * masshtab,
-    last.cols - (last.cols - image2.cols - maxPointCols * masshtab),
-    last.rows - (last.rows - image2.rows - maxPointRows * masshtab));
-  last = Mat(last, r).clone();//удаление ненужных полей 
-
+  CreatePoles(image, image2, last, masshtab);//запись чисел в поля кроссворда
   drewPoleLines(last, image2, masshtab, lineBright, darkLineBright);//вырисовование линий для кроссворда
-
-  if (argc < 2)
+  if (!IsUtilita)
   {
     cv::namedWindow(windowName4, WINDOW_AUTOSIZE);
     cv::imshow(windowName4, last);
@@ -305,17 +58,13 @@ int main(int argc, char* argv[])
   image2.copyTo(targetROI);
   drewPoleLines(last, image2, masshtab, lineBright, darkLineBright);
   cv::imwrite("result_" + name_, last);
-  if (argc < 2)
+  if (!IsUtilita)
   {
-
     cv::namedWindow(windowName5, WINDOW_AUTOSIZE);
     cv::imshow(windowName5, last);
-  }
-  cout << "done" << endl;
-  if (argc < 2)
-  {
     waitKey(0);
   }
+  cout << "done" << endl;
   return 0;
 }
 
@@ -452,3 +201,267 @@ void Reducing(Mat& image)
   image = Mat(image, r).clone();
 }
 
+
+
+bool ReadValues(Mat& image, int argc, bool& IsUtilita, string& name_, char* argv[], int& width, int& width_, int& height_, int& height, int maxValue, int minValue )
+{
+  if (argc > 1)
+  {
+    IsUtilita = true;
+  }
+  if (IsUtilita && (argc < 4))
+  {
+    cout << "Not enough arguments!" << endl;
+
+    cout << "Usege" << endl << "Crossvord [adress picture] [width] [hight]";
+    return true;
+  }
+
+  if (IsUtilita)
+  {
+    name_ = argv[1];
+    image = imread(name_, IMREAD_GRAYSCALE);
+  }
+  else
+  {
+    std::cout << "Get name of picture" << endl;
+    std::cin >> name_;
+    image = imread(name_, IMREAD_GRAYSCALE);
+
+  }
+  while (image.empty())
+  {
+    std::cout << "Could not open or find the image" << endl;
+    if (IsUtilita)
+    {
+      return true;
+    }
+    std::cout << "Try again. Get name of picture" << endl;
+    std::cin >> name_;
+    image = imread(name_, IMREAD_GRAYSCALE);
+  }
+
+  Reducing(image);
+
+  width_ = image.size[1];
+  height_ = image.size[0];
+  if (!IsUtilita)
+  {
+    std::cout << "Number of lines: " << width_ << endl;
+    std::cout << "Number of columns: " << height_ << endl;
+  }
+
+  if (IsUtilita)
+  {
+    width = atoi(argv[2]);
+    height = atoi(argv[3]);
+  }
+  else
+  {
+    std::cout << "Get weight" << endl;
+    std::cin >> width;
+  }
+
+  while ((width > maxValue) || (width < minValue))
+  {
+    std::cout << "Uncorrect value. Try again." << endl;
+    if (IsUtilita)
+    {
+      return true;
+    }
+    std::cin >> width;
+  }
+
+
+  if (!IsUtilita)
+  {
+    std::cout << "Get hight" << endl;
+    std::cin >> height;
+  }
+
+  while ((height > maxValue) || (height < minValue))
+  {
+    std::cout << "Uncorrect value. Try again." << endl;
+    if (IsUtilita)
+    {
+      return true;
+    }
+    std::cin >> height;
+  }
+  return false;
+}
+
+
+
+void CreatePoles(Mat& image_small, Mat& image_masshtab, Mat& image_with_poles, const int masshtab)
+{
+
+  int maxPointRows{ 0 };
+  int maxPointCols{ 0 };
+  for (int i = 0; i < image_small.rows; i++)
+  {
+    string countString{ "" };
+
+    int count{ 0 };
+    int point{ 0 };
+    for (int j = image_small.cols - 1; j >= 0; j--) // запись чисел строк
+    {
+
+      if (image_small.at<uchar>(i, j) == 0)
+      {
+        count++;
+
+      }
+      else
+      {
+        if (count != 0)
+        {
+          point++;
+          countString = to_string(count);
+          if (count > 9)
+          {
+            putText(image_with_poles,
+              countString,
+              Point(
+                image_with_poles.cols - image_masshtab.cols - point * masshtab + 0.1*masshtab,
+                masshtab*0.7 + i * masshtab + (image_with_poles.rows - image_masshtab.rows)),
+              masshtab*0.02,
+              masshtab*0.02,
+              Scalar(0));
+
+          }
+          else
+          {
+            putText(image_with_poles,
+              countString,
+              Point(
+                image_with_poles.cols - image_masshtab.cols - point * masshtab + masshtab * 0.3,
+                masshtab*0.7 + i * masshtab + (image_with_poles.rows - image_masshtab.rows)),
+              masshtab*0.02,
+              masshtab*0.02,
+              Scalar(0));
+          }
+          count = 0;
+        }
+      }
+    }
+    if (count != 0)
+    {
+      point++;
+      countString = to_string(count);
+      if (count > 9)
+      {
+        putText(image_with_poles,
+          countString,
+          Point(
+            image_with_poles.cols - image_masshtab.cols - point * masshtab + 0.1*masshtab,
+            masshtab*0.7 + i * masshtab + (image_with_poles.rows - image_masshtab.rows)),
+          masshtab*0.02,
+          masshtab*0.02,
+          Scalar(0));
+      }
+      else
+      {
+        putText(image_with_poles,
+          countString,
+          Point(
+            image_with_poles.cols - image_masshtab.cols - point * masshtab + masshtab * 0.3,
+            masshtab*0.7 + i * masshtab + (image_with_poles.rows - image_masshtab.rows)),
+          masshtab*0.02,
+          masshtab*0.02,
+          Scalar(0));
+      }
+    }
+    if (point > maxPointCols)
+      maxPointCols = point;
+    point = 0;
+    //std::cout << endl;
+  }
+
+  for (int i = 0; i < image_small.cols; i++) //запись чисел столбцов
+  {
+    string countString{ "" };
+
+    int count{ 0 };
+    int point{ 0 };
+    for (int j = image_small.rows - 1; j >= 0; j--)
+    {
+
+      if (image_small.at<uchar>(j, i) == 0)
+      {
+        count++;
+      }
+      else
+      {
+        if (count != 0)
+        {
+          countString = to_string(count);
+          if (count > 9)
+          {
+            putText(image_with_poles,
+              countString,
+              Point(
+                masshtab*0.1 + i * masshtab + (image_with_poles.cols - image_masshtab.cols),
+                image_with_poles.rows - image_masshtab.rows - point * masshtab - 0.25*masshtab),
+              masshtab*0.02,
+              masshtab*0.02,
+              Scalar(0));
+
+          }
+          else
+          {
+            putText(image_with_poles,
+              countString,
+              Point(
+                masshtab*0.25 + i * masshtab + (image_with_poles.cols - image_masshtab.cols),
+                image_with_poles.rows - image_masshtab.rows - point * masshtab - 0.25*masshtab),
+              masshtab*0.02,
+              masshtab*0.02,
+              Scalar(0));
+          }
+          point++;
+          count = 0;
+        }
+      }
+    }
+    if (count != 0)
+    {
+      countString = to_string(count);
+      if (count > 9)
+      {
+        putText(image_with_poles,
+          countString,
+          Point(
+            masshtab*0.1 + i * masshtab + (image_with_poles.cols - image_masshtab.cols),
+            image_with_poles.rows - image_masshtab.rows - point * masshtab - 0.25*masshtab),
+          masshtab*0.02,
+          masshtab*0.02,
+          Scalar(0));
+      }
+      else
+      {
+        putText(image_with_poles,
+          countString,
+          Point(
+            masshtab*0.25 + i * masshtab + (image_with_poles.cols - image_masshtab.cols),
+            image_with_poles.rows - image_masshtab.rows - point * masshtab - 0.25*masshtab),
+          masshtab*0.02,
+          masshtab*0.02,
+          Scalar(0));
+      }
+      point++;
+    }
+    if (point > maxPointRows)
+      maxPointRows = point;
+    point = 0;
+    //std::cout << endl;
+  }
+
+  Rect r(
+    image_with_poles.cols - image_masshtab.cols - maxPointCols * masshtab,
+    image_with_poles.rows - image_masshtab.rows - maxPointRows * masshtab,
+    image_with_poles.cols - (image_with_poles.cols - image_masshtab.cols - maxPointCols * masshtab),
+    image_with_poles.rows - (image_with_poles.rows - image_masshtab.rows - maxPointRows * masshtab));
+
+  image_with_poles = Mat(image_with_poles, r).clone();//удаление ненужных полей 
+}
