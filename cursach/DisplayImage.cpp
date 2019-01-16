@@ -10,7 +10,7 @@ void drewPoleLines(Mat& last, Mat& imagePicture, int masshtab, int lineBright, i
 void Reducing(Mat& image);
 void CreatePoles(Mat& image_small, Mat& image_masshtab, Mat& image_with_poles, const int masshtab);
 bool ReadValues(Mat& image, int argc, bool& IsUtilita, string& name_, char* argv[], int& width, int& width_, int& height_, int& height, int maxValue, int minValue);
-
+int readPositive();
 
 int main(int argc, char* argv[])
 {
@@ -259,7 +259,7 @@ bool ReadValues(Mat& image, int argc, bool& IsUtilita, string& name_, char* argv
   else
   {
     std::cout << "Get weight" << endl;
-    std::cin >> width;
+    width = readPositive();
   }
 
   while ((width > maxValue) || (width < minValue))
@@ -269,14 +269,15 @@ bool ReadValues(Mat& image, int argc, bool& IsUtilita, string& name_, char* argv
     {
       return true;
     }
-    std::cin >> width;
+    width = readPositive();
   }
 
 
   if (!IsUtilita)
   {
     std::cout << "Get hight" << endl;
-    std::cin >> height;
+    //std::cin >> height;
+    height = readPositive();
   }
 
   while ((height > maxValue) || (height < minValue))
@@ -286,9 +287,25 @@ bool ReadValues(Mat& image, int argc, bool& IsUtilita, string& name_, char* argv
     {
       return true;
     }
-    std::cin >> height;
+    height = readPositive();
   }
   return false;
+}
+
+
+
+int readPositive()
+{
+  std::string input;
+  cin >> input;
+  for (int i = 0; i < input.length(); i++)
+  {
+    if(!isdigit(input[i]))
+    {
+      return -1;
+    }
+  }
+  return stoi(input);
 }
 
 
@@ -375,7 +392,6 @@ void CreatePoles(Mat& image_small, Mat& image_masshtab, Mat& image_with_poles, c
     if (point > maxPointCols)
       maxPointCols = point;
     point = 0;
-    //std::cout << endl;
   }
 
   for (int i = 0; i < image_small.cols; i++) //запись чисел столбцов
