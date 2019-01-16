@@ -52,12 +52,17 @@ int main(int argc, char* argv[])
     cv::namedWindow(windowName4, WINDOW_AUTOSIZE);
     cv::imshow(windowName4, last);
   }
-  cv::imwrite("pole_" + name_, last);
+  string filename = name_; 
+  filename.insert(filename.find_last_of('\\') + 1, "pole_");
+  //cv::imwrite("pole_" + name_, last);
+  cv::imwrite(filename, last);
   cv::Rect roi(cv::Rect(last.cols - image2.cols, last.rows - image2.rows, image2.cols, image2.rows));
   cv::Mat targetROI = last(roi);
   image2.copyTo(targetROI);
   drewPoleLines(last, image2, masshtab, lineBright, darkLineBright);
-  cv::imwrite("result_" + name_, last);
+  filename = name_;
+  filename.insert(filename.find_last_of('\\') + 1, "result_");
+  cv::imwrite(filename, last);
   if (!IsUtilita)
   {
     cv::namedWindow(windowName5, WINDOW_AUTOSIZE);
